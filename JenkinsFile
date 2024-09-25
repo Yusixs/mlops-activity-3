@@ -1,57 +1,40 @@
 pipeline {
     agent any
-
     environment {
-        DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials') // Jenkins credential ID
+        DOCKER_CREDENTIALS_ID = 'docker-hub-credentials' // Set your credentials ID
         DOCKER_IMAGE = 'my-ml-app:latest'
-        DOCKER_REPO = 'yusixs/my-ml-app'
+        DOCKER_REGISTRY_URL = 'https://index.docker.io/v2/'  // v2 API endpoint
     }
-
     stages {
-        stage('Checkout') {
-            steps {
-                // Use the correct branch
-                git branch: 'main', url: 'https://github.com/Yusixs/mlops-activity-3.git'
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
-                // Build the Docker image
                 script {
-                    docker.build("${DOCKER_IMAGE}", ".")
+                    docker.build("${DOCKER_IMAGE}")
                 }
             }
         }
-
         stage('Login to Docker Hub') {
             steps {
-                // Log in to Docker Hub
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS}") {
-                        echo 'Logged in to Docker Hub'
+                    docker.withRegistry("${DOCKER_REGISTRY_URL}", "${DOCKER_CREDENTIALS_ID}") {
+                        echo "Logged in successfully to Docker Hub using v2 API"
                     }
                 }
             }
         }
-
         stage('Push Docker Image') {
             steps {
-                // Tag and push the Docker image to Docker Hub
                 script {
-                    def image = docker.image("${DOCKER_IMAGE}")
-                    image.push()
+                    docker.withRegistry("${DOCKER_REGISTRY_URL}", "${DOCKER_CREDENTIALS_ID}") {
+                        docker.image("${DOCKER_IMAGE}").push()
+                    }
                 }
             }
         }
     }
-
     post {
-        success {
-            echo 'Docker image built and pushed successfully!'
-        }
-        failure {
-            echo 'Failed to build or push the Docker image.'
+        always {
+            echo "Pipeline completed."
         }
     }
 }
