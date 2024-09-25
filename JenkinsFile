@@ -22,14 +22,14 @@ pipeline {
                 }
             }
         }
-        stage('Push Docker Image') {
+        stage('Push image') {
             steps {
                 script {
-                    docker.withRegistry("${DOCKER_REGISTRY_URL}", "${DOCKER_CREDENTIALS_ID}") {
-                        docker.image("${DOCKER_IMAGE}").push()
-                    }
+                    withDockerRegistry([ credentialsId: "docker-hub-credentials", url: "" ]) {
+                    bat "docker push ${DOCKER_IMAGE}"
                 }
             }
+            
         }
     }
     post {
