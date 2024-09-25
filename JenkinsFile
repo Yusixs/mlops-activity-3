@@ -10,8 +10,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the source code from GitHub
-                checkout scm
+                // Use the correct branch
+                git branch: 'main', url: 'https://github.com/your-repo-url.git'
             }
         }
 
