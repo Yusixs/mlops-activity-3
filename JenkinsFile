@@ -2,7 +2,7 @@ pipeline {
     agent any
     environment {
         DOCKER_CREDENTIALS_ID = 'docker-hub-credentials' // Set your credentials ID
-        DOCKER_IMAGE = 'my-ml-app:latest'
+        DOCKER_IMAGE = 'yusixs/my-ml-app:latest'
         DOCKER_REGISTRY_URL = 'https://index.docker.io/v2/'  // v2 API endpoint
     }
     stages {
